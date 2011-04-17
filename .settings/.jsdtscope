@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="views/" kind="src" path="app"/>
+	<classpathentry kind="src" path="app/views"/>
+	<classpathentry kind="src" path="lib/jasmine"/>
+	<classpathentry kind="src" path="lib/JSBuilder/bin"/>
+	<classpathentry excluding="generators/model/templates/|generators/app/files/lib/JSBuilder/bin/|generators/app/files/lib/jasmine/|generators/app/files/test/unit/|Parser/Statement/|generators/app/files/app/|generators/app/|generators/controller/templates/|generators/model/|generators/controller/|generators/app/files/lib/sencha-jasmine/|generators/app/templates/|Parser/|generators/app/files/lib/sencha-jasmine/matchers/" kind="src" path="lib/JSBuilder/src"/>
+	<classpathentry excluding="files/lib/JSBuilder/bin/|files/lib/jasmine/|files/test/unit/|files/app/|files/lib/sencha-jasmine/|templates/|files/lib/sencha-jasmine/matchers/" kind="src" path="lib/JSBuilder/src/generators/app"/>
+	<classpathentry kind="src" path="lib/JSBuilder/src/generators/app/files/app"/>
+	<classpathentry kind="src" path="lib/JSBuilder/src/generators/app/files/lib/jasmine"/>
+	<classpathentry kind="src" path="lib/JSBuilder/src/generators/app/files/lib/JSBuilder/bin"/>
+	<classpathentry excluding="matchers/" kind="src" path="lib/JSBuilder/src/generators/app/files/lib/sencha-jasmine"/>
+	<classpathentry kind="src" path="lib/JSBuilder/src/generators/app/files/lib/sencha-jasmine/matchers"/>
+	<classpathentry kind="src" path="lib/JSBuilder/src/generators/app/files/test/unit"/>
+	<classpathentry kind="src" path="lib/JSBuilder/src/generators/app/templates"/>
+	<classpathentry excluding="templates/" kind="src" path="lib/JSBuilder/src/generators/controller"/>
+	<classpathentry kind="src" path="lib/JSBuilder/src/generators/controller/templates"/>
+	<classpathentry excluding="templates/" kind="src" path="lib/JSBuilder/src/generators/model"/>
+	<classpathentry kind="src" path="lib/JSBuilder/src/generators/model/templates"/>
+	<classpathentry excluding="Statement/" kind="src" path="lib/JSBuilder/src/Parser"/>
+	<classpathentry kind="src" path="lib/JSBuilder/src/Parser/Statement"/>
+	<classpathentry excluding="parser/" kind="src" path="lib/JSBuilder/tests"/>
+	<classpathentry kind="src" path="lib/JSBuilder/tests/parser"/>
+	<classpathentry excluding="matchers/" kind="src" path="lib/sencha-jasmine"/>
+	<classpathentry kind="src" path="lib/sencha-jasmine/matchers"/>
+	<classpathentry kind="src" path="test/unit"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
