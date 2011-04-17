@@ -16,8 +16,7 @@ Contacts.views.ContactDetails = Ext
 						// a back button to go back to the list
 						this.dockedItems = {
 							dock : 'top',
-							xtype : 'toolbar',
-							title : 'Contact',
+							xtype : 'toolbar',							
 							items : [ {
 								text : 'Back',
 								ui : 'back',

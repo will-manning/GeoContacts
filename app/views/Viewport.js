@@ -8,7 +8,10 @@
 Contacts.Viewport = Ext.extend(Ext.Panel, {
     id        : 'viewport',
     layout    : 'card',
-    fullscreen: true
+    fullscreen: true,
+    draggable: true,
+    layoutOnOrientationChange: true,
+    scroll: 'vertical'
 
     
 });
