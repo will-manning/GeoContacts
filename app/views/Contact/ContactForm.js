@@ -11,7 +11,7 @@ Contacts.views.ContactForm = Ext.extend(Ext.form.FormPanel, {
              * a field set nicely ties out fields together
              */  	
             xtype: 'fieldset',
-            instructions: 'Fill in at least a first and last name',
+            instructions: '* denotes a required field',
             defaults: {
                 labelWidth: '40%'
             },
