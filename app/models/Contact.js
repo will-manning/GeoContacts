@@ -1,5 +1,5 @@
 /**
- * @class Search
+ * @class Contact
  * @extends Ext.data.Model
  * 
  * The contact model
@@ -10,7 +10,7 @@ Ext.regModel("Contact", {
         {name: "id",    type: "int"},
         {name: "firstName", type: "string"},
         {name: "lastName", type: "string"},
-        {name: "email", type: "string"},
+        {name: "email", type: "email"},
         {name: "address1", type: "string"},
         {name: "address2", type: "string"},
         {name: "city", type: "string"}

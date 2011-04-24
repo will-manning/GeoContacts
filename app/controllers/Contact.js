@@ -25,7 +25,7 @@ Ext.regController("Contact", {
 						// when a user selects a contact slide to the details
 						// page
 						// by calling the show action
-						select : this.show,
+						select : this.showFromList,
 						scope : this
 					},
 					/*
@@ -63,6 +63,11 @@ Ext.regController("Contact", {
 			});
 		}
 	},
+	
+	showFromList: function(list, record){
+		var model = Ext.ModelMgr.create(record.data, 'Contact');
+		this.show(model);
+	},
 
 	/**
 	 * render the details template
@@ -71,55 +76,69 @@ Ext.regController("Contact", {
 	 * @param record
 	 *            the list item that was clicked
 	 */
-	show : function(list, record) {
-
-		/*
-		 * render the details view and pass it the record
-		 */
-		this.details = this.render({
-			xtype : 'contact-details',
-			data : record.data || this.details.record.data,
-			/*data is deleted after the tpl is rendered so I'm
-			storing it again*/
-			record : record,
-			listeners : {
-				deactivate : function(details) {
-					details.destroy();
+	show : function(contact) {		
+			/*
+			 * render the details view and pass it the record
+			 */
+			this.details = this.render({
+				xtype : 'contact-details',
+				/*
+				 * date can come form 2 different places depending on whether the previous
+				 * page was edit or index
+				 */
+				data : contact.data,
+				/*
+				 * data is deleted after the tpl is rendered so I'm storing it
+				 * again
+				 */
+				contact: contact,
+				listeners : {
+					deactivate : function(details) {
+						details.destroy();
+					}
 				}
-			}
-		});
+			});
+			
+			
+			var that = this;
 
-		/*
-		 * add a listener to teh back button
-		 */
-		this.details.query('#backButton')[0].on({
-			tap : this.index,
-			scope : this
-		});
+			/*
+			 * add a listener to teh back button
+			 */
+			this.details.query('#backButton')[0].on({
+				tap : this.index,
+				scope : this
+			});			
+			
+			/*
+			 * add a listener to the edit button
+			 */
+			this.details.query('#editButton')[0].on({
+				tap : this.editDetails,
+				scope : that				
+			});
 
-		var that = this;
+			/*
+			 * add a listener to the map button
+			 */
+			this.details.query('#mapButton')[0].on({
+				tap : function() {
+					Ext.dispatch({
+						controller : "Contact",
+						action : "showLocation",
+						record : contact ? contact : this.details.contact
+					});
+				},
+				scope : that
+			});
 
-		/*
-		 * add a listener to the map button
-		 */
-		this.details.query('#mapButton')[0].on({
-			tap : function() {
-				Ext.dispatch({
-					controller : "Contact",
-					action : "showLocation",
-					record : that.details.record
-				});
-			},
-			scope : that
-		});
-
-		/*
-		 * slide it in from the left
-		 */
-		Ext.getCmp('viewport').setActiveItem(this.details, {
-			type : 'slide',
-			direction : 'left'
-		});
+			/*
+			 * slide it in from the left
+			 */
+			Ext.getCmp('viewport').setActiveItem(this.details, {
+				type : 'slide',
+				direction : 'left'
+			});	
 
 	},
 
@@ -135,8 +154,8 @@ Ext.regController("Contact", {
 				deactivate : function(form) {
 					form.destroy();
 				}
-			}
-		});
+			}			
+		});		
 
 		this.form.query('#cancelButton')[0].on({
 			tap : this.index,
@@ -146,6 +165,46 @@ Ext.regController("Contact", {
 		this.form.query('#doneButton')[0].on({
 			tap : this.create,
 			scope : this
+		});
+
+		// make the form teh active item
+		Ext.getCmp('viewport').setActiveItem(this.form, {
+			type : 'slide',
+			direction : 'left'
+		});
+
+	},
+	
+	/**
+	 * render the form for editing a contact
+	 */
+	editDetails : function() {
+		
+		var that = this;
+
+		this.form = this.render({
+			xtype : 'contact-form',
+			listeners : {
+				// always destroy to preserve memory
+				deactivate : function(form) {
+					form.destroy();
+				}
+			}			
+		});
+		
+		this.form.load(this.details.contact);
+
+		this.form.query('#cancelButton')[0].on({
+			tap : function() {
+				that.show(that.details.contact);
+			},
+			scope : that.listPanel		
+			
+		});
+
+		this.form.query('#doneButton')[0].on({
+			tap : this.update,
+			scope : that
 		});
 
 		// make the form teh active item
@@ -176,6 +235,32 @@ Ext.regController("Contact", {
 		}
 
 	},
+	
+	update : function() {
+		
+		
+		var model = this.listPanel.store.getById(this.details.contact.data.id); 
+		//Ext.ModelMgr.create(this.form.getValues(), 'Contact');
+		
+		this.form.updateRecord(model);
+
+		var errors = model.validate(), message = "";
+
+		if (errors.isValid()) {
+
+			this.listPanel.store.update(model);
+			this.show(model);
+
+		} else {
+			Ext.each(errors.items, function(rec, i) {
+				message += rec.message + "<br>";
+			});
+			Ext.Msg.alert("Validate", message, function() {
+			});
+			return false;
+		}
+
+	},
 
 	/**
 	 * render the map view with the current contacts address
@@ -195,12 +280,15 @@ Ext.regController("Contact", {
 				+ options.record.data.address2 + ", "
 				+ options.record.data.city;
 
-		//get the geogle JS APIs geocoder
+		// get the geogle JS APIs geocoder
 		var geocoder = new google.maps.Geocoder();
 
 		var that = this;
 
-		/*get a gecode (lat/long) for the current address and mark it on the map*/
+		/*
+		 * get a gecode (lat/long) for the current address and mark it on the
+		 * map
+		 */
 		geocoder.geocode({
 			'address' : address
 		}, function(results, status) {
@@ -228,13 +316,12 @@ Ext.regController("Contact", {
 		 * travers the view and finds the add button and adds a listener
 		 */
 		this.map.query('#cancelButton')[0].on({
-			tap : this.show,
-			scope : this,
+			tap : function() {
+				that.show(that.details.contact);
+			},
+			scope : that.listPanel	
 
-			data : options.record.data
-
-		});	
-		
+		});
 
 		/*
 		 * travers the view and finds the add button and adds a listener
@@ -242,39 +329,40 @@ Ext.regController("Contact", {
 		this.map.query('#dirButton')[0].on({
 			tap : this.directions,
 			scope : that,
-			map: this.map
+			map : this.map
 		});
 	},
 
 	/**
-	 * Use w3c geolocation to get the users current location then provide directions from there
+	 * Use w3c geolocation to get the users current location then provide
+	 * directions from there
 	 */
 	directions : function() {
-		
+
 		var that = this;
-		
+
 		if (navigator.geolocation) {
-			//the success function
+			// the success function
 			navigator.geolocation.getCurrentPosition(function(pos) {
-				
+
 				var directionsService = new google.maps.DirectionsService();
 				var directionsDisplay = new google.maps.DirectionsRenderer();
-				
+
 				directionsDisplay.setMap(that.map.map.map);
-				
+
 				var request = {
-				        origin:pos.coords.latitude+", "+pos.coords.longitude, 
-				        destination: that.map.position.Da+", "+that.map.position.Ea,
-				        travelMode: google.maps.DirectionsTravelMode.DRIVING
-				    };
-				
+					origin : pos.coords.latitude + ", " + pos.coords.longitude,
+					destination : that.map.position.Da + ", "
+							+ that.map.position.Ea,
+					travelMode : google.maps.DirectionsTravelMode.DRIVING
+				};
+
 				directionsService.route(request, function(response, status) {
-				      if (status == google.maps.DirectionsStatus.OK) {
-				        directionsDisplay.setDirections(response);
-				      }
-				    });
-			},
-			function() {
+					if (status == google.maps.DirectionsStatus.OK) {
+						directionsDisplay.setDirections(response);
+					}
+				});
+			}, function() {
 			});
 		} else {
 			alert("Can't obtain your position");
